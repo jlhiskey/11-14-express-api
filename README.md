@@ -3,7 +3,7 @@
 ![cf](https://i.imgur.com/7v5ASc8.png) JavaScript-401d26
 =======
 ## Express-API
- This application allows you to create, request and delete entries in the grocery list api which stores your grocery list and allows you to add and remove items from the list.
+ This application allows you to create, request, modify and delete entries in the grocery list api which stores your grocery list.
 
 ## Getting Started
 - Fork this repository: https://github.com/jlhiskey/11-14-express-api.git

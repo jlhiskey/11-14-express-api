@@ -3,19 +3,22 @@
 //! Jason- Requirements
 const express = require('express');
 const logger = require('./logger');
-
+const loggerMiddleware = require('./logger-middleware');
+const errorMiddleware = require('./error-middleware');
 const groceryListRoutes = require('../routes/grocery-list-router');
 
 //! Jason- Injects express wizardry into the application
 const app = express();
 
 // --ROUTES---------------------------------------------------------------------------------------
+// --- Middleware and Api------------------------------------------------------------
+app.use(loggerMiddleware);
 app.use(groceryListRoutes);
-
 app.all('*', (request, response) => {
   logger.log(logger.INFO, 'Returning a 404 from catch-all/default route (the route was not found');
   return response.sendStatus(404);
 });
+app.use(errorMiddleware);
 //--------------------------------------------------------------------------------------------------
 //! Jason- This will set server.js as a module.
 const server = module.exports = {};
