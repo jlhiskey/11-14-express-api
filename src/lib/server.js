@@ -2,6 +2,7 @@
 
 //! Jason- Requirements
 const express = require('express');
+const mongoose = require('mongoose');
 const logger = require('./logger');
 const loggerMiddleware = require('./logger-middleware');
 const errorMiddleware = require('./error-middleware');
@@ -31,17 +32,23 @@ let internalServer = null;
  */
 //! Jason- ON SWITCH
 server.start = () => {
-  //! Jason- Awakens the 'http' beast who proceeds to cast their magic and make the server work.
-  internalServer = app.listen(process.env.PORT, () => {
-    //! Jason- Creates a log that tells us that the server is alive and what port it is on.
-    logger.log(logger.INFO, `Server is on at PORT: ${process.env.PORT}`);
-  });
+  return mongoose.connect(process.env.MONGODB_URI)
+    .then(() => {
+      //! Jason- Awakens the 'http' beast who proceeds to cast their magic and make the server work.
+      internalServer = app.listen(process.env.PORT, () => {
+        //! Jason- Creates a log that tells us that the server is alive and what port it is on.
+        logger.log(logger.INFO, `Server is on at PORT: ${process.env.PORT}`);
+      });
+    });
 };
 
 //! Jason- OFF SWITCH
 server.stop = () => {
-  internalServer.close(() => {
-    //! Jason- Creates a log that tells us that the server is now off.
-    logger.log(logger.INFO, 'Server is OFF');
-  });
+  return mongoose.disconnect()
+    .then(() => {
+      internalServer.close(() => {
+        //! Jason- Creates a log that tells us that the server is now off.
+        logger.log(logger.INFO, 'Server is OFF');
+      });
+    });
 };

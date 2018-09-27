@@ -1,16 +1,22 @@
 'use strict';
 
-//! Jason- creates a unique ID for user
-const uuid = require('uuid/v1');
+//! Jason- Requirements
+const mongoose = require('mongoose');
 
-class GroceryList {
-  constructor(groceryListName, groceryItem) {
-    this.id = uuid();
-    this.timestamp = new Date();
+const groceryListSchema = mongoose.Schema({
+  timestamp: {
+    type: Date,
+    default: () => new Date(),
+  },
+  title: {
+    type: String,
+    required: true,
+    unique: true,
+  },
+  content: {
+    type: String,
+    required: true,
+  },
+});
 
-    this.title = groceryListName;
-    this.content = groceryItem;
-  }
-}
-
-module.exports = GroceryList;
+module.exports = mongoose.model('groceryList', groceryListSchema);

@@ -10,72 +10,68 @@ const logger = require('../lib/logger');
 
 const jsonParser = bodyParser.json();
 const router = module.exports = new express.Router();
-// Local Storage Database
-const storageById = [];
-const storageByHash = {};
 
 // -----POST ROUTE---------------------------------------------------------------------------------
 router.post('/api/grocery-list', jsonParser, (request, response, next) => {
-  if (!request.body) {
-    return next(new HttpError(400, 'Body is required'));
-  }
-
-  if (!request.body.title) {
-    return next(new HttpError(400, 'Title is required'));
-  }
-
-  if (!request.body.content) {
-    return next(new HttpError(400, 'Content is required'));
-  }
-
-  const groceryList = new GroceryList(request.body.title, request.body.content);
-  storageById.push(groceryList.id);
-  storageByHash[groceryList.id] = groceryList;
-
-  logger.log(logger.INFO, 'Responding with a 200 status code and a json object');
-  logger.log(logger.INFO, storageById);
-  logger.log(logger.INFO, storageByHash);
-  return response.json(groceryList);
+  return new GroceryList(request.body).save()
+    .then((savedGroceryList) => {
+      logger.log(logger.INFO, 'Responding with a 200 status code');
+      return response.json(savedGroceryList);
+    })
+    .catch(next);
 });
 
 // -----GET ROUTE---------------------------------------------------------------------------------
 router.get('/api/grocery-list/:id', (request, response, next) => {
-  logger.log(logger.INFO, `Trying to get an object with id ${request.params.id}`);
-
-  if (storageByHash[request.params.id]) {
-    logger.log(logger.INFO, 'Responding with a 200 status code and json data');
-    return response.json(storageByHash[request.params.id]);
-  }
-  return next(new HttpError(404, 'The grocery list was not found'));
+  return GroceryList.findById(request.params.id)
+    .then((groceryList) => {
+      if (groceryList) {
+        logger.log(logger.INFO, 'Responding with a 200 status code and a grocery list');
+        return response.json(groceryList);
+      }
+      logger.log(logger.INFO, 'Responding with a 404 status code. Grocery List Not Found');
+      return next(new HttpError(404, 'Grocery List Not Found'));
+    })
+    .catch(next);
 });
 
 // -----DELETE ROUTE--------------------------------------------------------------------------------
 router.delete('/api/grocery-list/:id', (request, response, next) => {
-  logger.log(logger.INFO, `Trying to delete an grocery list with id ${request.params.id}`);
-
-  if (storageByHash[request.params.id]) {
-    logger.log(logger.INFO, 'We found the right grocery list to remove');
-    const indexToRemove = storageById.indexOf(request.params.id);
-    storageById.splice(indexToRemove, 1);
-    delete storageByHash[request.params.id];
-    return response.sendStatus(204);
-  }
-  return next(new HttpError(404, 'The grocery list was not found'));
+  return GroceryList.findByIdAndDelete(request.params.id)
+    .then((groceryList) => {
+      if (groceryList) {
+        logger.log(logger.INFO, 'Responding with a 200 status code and a grocery list');
+        return response.json(groceryList);
+      }
+      logger.log(logger.INFO, 'Responding with a 404 status code. Grocery List Not Found');
+      return next(new HttpError(404, 'Grocery List Not Found'));
+    })
+    .catch(next);
 });
-
 // -----PUT ROUTE---------------------------------------------------------------------------------
 router.put('/api/grocery-list/:id', jsonParser, (request, response, next) => {
-  logger.log(logger.INFO, `Trying to update an grocery list with id ${request.params.id}`);
-
-  if (storageByHash[request.params.id]) {
-    logger.log(logger.INFO, 'We found the right grocery list to update');
-    if (request.body.title) {
-      storageByHash[request.params.id].title = request.body.title;
-    }
-    if (request.body.content) {
-      storageByHash[request.params.id].content = request.body.content;
-    }
-    return response.json(storageByHash[request.params.id]);
-  }
-  return next(new HttpError(404, 'The grocery list was not found'));
+  return GroceryList.findById(request.params.id)
+    .then((groceryList) => {
+      if (!request.body) {
+        throw HttpError(400, 'body is required');
+      }
+      if (!groceryList) {
+        throw HttpError(404, 'synth not found');
+      }
+      if (request.body.title) {
+        groceryList.set({
+          title: `${request.body.title}`,
+        });
+      }
+      if (request.body.content) {
+        groceryList.set({
+          content: `${request.body.content}`,
+        });
+      }
+      logger.log(logger.INFO, 'Responding with a 200 status code and a grocery list');
+      return groceryList.save()
+        .then(updatedGroceryList => response.json(updatedGroceryList))
+        .catch(next);
+    })
+    .catch(next);
 });
