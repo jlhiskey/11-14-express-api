@@ -1,8 +1,9 @@
 'use strict';
 
+//! Jason- Requirements
 const mongoose = require('mongoose');
 
-const categorySchema = mongoose.Schema({
+const groceryListSchema = mongoose.Schema({
   timestamp: {
     type: Date,
     default: () => new Date(),
@@ -15,17 +16,7 @@ const categorySchema = mongoose.Schema({
   content: {
     type: String,
     required: true,
-    minlength: 10,
   },
-  blogPosts: [
-    {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'grocery-list',
-    },
-  ],
-},
-{
-  usePushEach: true,
 });
 
-module.exports = mongoose.model('category', categorySchema);
+module.exports = mongoose.model('groceryList', groceryListSchema);
