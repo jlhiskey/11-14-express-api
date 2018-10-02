@@ -3,7 +3,7 @@
 const faker = require('faker');
 const superagent = require('superagent');
 const server = require('../lib/server');
-const groceryListMock = require('./lib/grocery-mock');
+const groceryListMock = require('./lib/grocery-list-item-mock');
 
 const API_URL = `http://localhost:${process.env.PORT}/api/grocery-list`;
 
