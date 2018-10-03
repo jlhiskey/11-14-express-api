@@ -3,7 +3,7 @@
 const faker = require('faker');
 const superagent = require('superagent');
 const server = require('../lib/server');
-const groceryListMock = require('./lib/grocery-mock');
+const groceryListMock = require('./lib/grocery-list-mock');
 
 const API_URL = `http://localhost:${process.env.PORT}/api/grocery-list`;
 
@@ -63,7 +63,7 @@ describe('/api/grocery-list', () => {
       });
   });
 
-  // -----GET ROUTE TESTS--------------------------------------------------------------------------
+  // -----GET ROUTE TESTS------------------------------------------------------------------------
   // -----SUCCESS TEST------------------------
   test('should respond with 200 status code and a json note if there is a matching id', () => {
     let savedGroceryListMock = null;
@@ -94,7 +94,7 @@ describe('/api/grocery-list', () => {
       });
   });
 
-  // -----DELETE ROUTE TESTS-----------------------------------------------------------------------
+  // -----DELETE ROUTE TESTS---------------------------------------------------------------------
   test('should respond with 200 when grocery list is removed', () => {
     let savedGroceryListMock = null;
     return groceryListMock.pCreateGroceryListMock()

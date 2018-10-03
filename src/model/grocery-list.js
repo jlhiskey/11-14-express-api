@@ -1,6 +1,5 @@
 'use strict';
 
-//! Jason- Requirements
 const mongoose = require('mongoose');
 
 const groceryListSchema = mongoose.Schema({
@@ -17,6 +16,15 @@ const groceryListSchema = mongoose.Schema({
     type: String,
     required: true,
   },
+  groceryListItem: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'groceryListItem',
+    },
+  ],
+},
+{
+  usePushEach: true,
 });
 
 module.exports = mongoose.model('groceryList', groceryListSchema);

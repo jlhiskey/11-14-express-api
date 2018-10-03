@@ -7,6 +7,7 @@ const logger = require('./logger');
 const loggerMiddleware = require('./logger-middleware');
 const errorMiddleware = require('./error-middleware');
 const groceryListRoutes = require('../routes/grocery-list-router');
+const groceryListItemRoutes = require('../routes/grocery-list-item-router');
 
 //! Jason- Injects express wizardry into the application
 const app = express();
@@ -15,6 +16,8 @@ const app = express();
 // --- Middleware and Api------------------------------------------------------------
 app.use(loggerMiddleware);
 app.use(groceryListRoutes);
+app.use(groceryListItemRoutes);
+
 app.all('*', (request, response) => {
   logger.log(logger.INFO, 'Returning a 404 from catch-all/default route (the route was not found');
   return response.sendStatus(404);
